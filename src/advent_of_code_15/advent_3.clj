@@ -45,7 +45,7 @@
 
 ;; Second Solution
 
-(let [santa-map (generate-smegsmog santa-input)
-      robot-map (generate-smegsmog robot-input)]
-  (count (merge santa-map robot-map))
- )
+#_(let [santa-map (generate-smegsmog santa-input)
+        robot-map (generate-smegsmog robot-input)]
+    (count (merge santa-map robot-map))
+    )
