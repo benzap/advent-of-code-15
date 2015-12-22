@@ -63,8 +63,8 @@
 ;;
 
 (defmulti perform-grid-action
-  (fn [grid grid-actions]
-    (nth grid-actions 2)
+  (fn [grid grid-action]
+    (nth grid-action 2)
     ))
 
 (defmethod perform-grid-action :toggle
@@ -89,11 +89,14 @@
   (let [[x y _] grid-action]
     (assoc grid [x y] :off)))
 
-(defn perform-light-dance [input]
+(defn perform-light-dance 
+  [input &
+   {:keys [light-function]
+    :or {light-function perform-grid-action}}]
   (->> input
        (s/split-lines)
        (mapcat parse-line-into-actions)
-       (reduce perform-grid-action {})))
+       (reduce light-function {})))
 
 (defn count-lights-on [input]
   (->> input
@@ -103,3 +106,35 @@
 
 ;; First Solution
 ;; (count-lights-on light-input)
+
+(defmulti perform-grid-brightness-action
+  (fn [grid grid-action]
+    (nth grid-action 2)
+    ))
+
+(defmethod perform-grid-brightness-action :toggle
+  [grid [x y _]]
+  (update-in grid [[x y]] (fnil #(+ 2 %) 0)))
+
+(defmethod perform-grid-brightness-action :on
+  [grid [x y _]]
+  (update-in grid [[x y]] (fnil inc 0)))
+
+(defmethod perform-grid-brightness-action :off
+  [grid [x y _]]
+  (update-in grid [[x y]]
+             (fnil (fn [val] 
+                     (if-not (zero? val) 
+                       (dec val) 
+                       val)) 0)))
+
+(defn sum-light-brightness [input]
+  (->> input
+       (perform-light-dance :light-function perform-grid-brightness-action)
+       ;;vals
+       ;;(apply +)
+       ))
+
+(sum-light-brightness "toggle 564,550 through 564,560")
+
+;; Second Solution
